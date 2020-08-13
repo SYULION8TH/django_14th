@@ -14,8 +14,9 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include # include를 추가
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/', include('todo.urls')), # 라우터에 등록된 url들을 include 해준다.
 ]
