@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
+from django.http import Http404
 
 
 class TodoListAPIView(APIView):
@@ -24,23 +25,25 @@ class TodoListAPIView(APIView):
 # TodoList 클래스와는 달리 pk값을 받음 (메소드에 pk인자)
 class TodoDetailAPIView(APIView):
 
+    def get_object(self, pk):
+        try:
+            return Todo.objects.get(pk=pk)
+        except Post.DoesNotExist:
+            raise Http404
     def get(self, request, pk, format=None):
-        
-        todo = self.get_object(pk)
-        # post = get_object_or_404(Post, pk)
+        todo = get_object_or_404(Todo, pk = pk)
         serializer = TodoSerializer(todo)
         return Response(serializer.data)
 
-
     def put(self, request, pk, format=None):
-        todo = self.get_object(pk)
-        serializer = PostSerializer(todo, data=request.data)
+        todo = get_object_or_404(Todo, pk = pk)
+        serializer = TodoSerializer(todo, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk, format=None):
-        todo = self.get_object(pk)
+        todo = get_object_or_404(Todo, pk = pk)
         todo.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
